@@ -68,10 +68,9 @@ def find_ids_within_ten_percentage_threshold(df, reference_id) -> pd.DataFrame()
         unrolled_df["id_start"] == reference_value, "distance"
     ].mean()
 
-    # Filter id_start values within the threshold using the 'between' method
     within_threshold = unrolled_df.loc[
         (unrolled_df["id_start"] != reference_value)
-        & (  # Exclude the reference value itself
+        & (
             unrolled_df["distance"].between(
                 0.9 * average_distance, 1.1 * average_distance
             )
@@ -79,7 +78,6 @@ def find_ids_within_ten_percentage_threshold(df, reference_id) -> pd.DataFrame()
         "id_start",
     ].unique()
 
-    # Sort the result and return as a list
     result_list = sorted(within_threshold.tolist())
 
     return result_list
@@ -96,8 +94,14 @@ def calculate_toll_rate(df) -> pd.DataFrame():  # type: ignore
         pandas.DataFrame
     """
     # Wrie your logic here
+    rate_coefficients = {"moto": 0.8, "car": 1.2, "rv": 1.5, "bus": 2.2, "truck": 3.6}
 
-    return df
+    result_df = unrolled_df[["id_start", "id_end"]].copy()
+
+    for vehicle_type, rate_coefficient in rate_coefficients.items():
+        result_df[vehicle_type] = unrolled_df["distance"] * rate_coefficient
+
+    return result_df
 
 
 def calculate_time_based_toll_rates(df) -> pd.DataFrame():  # type: ignore
@@ -127,3 +131,6 @@ print(unrolled_df)
 reference_value = unrolled_df["id_start"].iloc[0]
 result_list = find_ids_within_ten_percentage_threshold(unrolled_df, reference_value)
 print(result_list)
+
+toll_rate = calculate_toll_rate(unrolled_df)
+print(toll_rate)

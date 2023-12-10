@@ -41,13 +41,10 @@ def unroll_distance_matrix(df) -> pd.DataFrame():  # type: ignore
     # Write your logic here
     stacked_df = distance_matrix.stack()
 
-    # Reset the index to turn index labels into columns
     unrolled_df = stacked_df.reset_index()
 
-    # Rename the columns for clarity
     unrolled_df.columns = ["id_start", "id_end", "distance"]
 
-    # Exclude rows where id_start is the same as id_end
     unrolled_df = unrolled_df[unrolled_df["id_start"] != unrolled_df["id_end"]]
 
     return unrolled_df
@@ -67,7 +64,25 @@ def find_ids_within_ten_percentage_threshold(df, reference_id) -> pd.DataFrame()
     """  # noqa: E501
     # Write your logic here
 
-    return df
+    average_distance = unrolled_df.loc[
+        unrolled_df["id_start"] == reference_value, "distance"
+    ].mean()
+
+    # Filter id_start values within the threshold using the 'between' method
+    within_threshold = unrolled_df.loc[
+        (unrolled_df["id_start"] != reference_value)
+        & (  # Exclude the reference value itself
+            unrolled_df["distance"].between(
+                0.9 * average_distance, 1.1 * average_distance
+            )
+        ),
+        "id_start",
+    ].unique()
+
+    # Sort the result and return as a list
+    result_list = sorted(within_threshold.tolist())
+
+    return result_list
 
 
 def calculate_toll_rate(df) -> pd.DataFrame():  # type: ignore
@@ -106,5 +121,9 @@ df2 = pd.read_csv("datasets/dataset-3.csv")
 distance_matrix = calculate_distance_matrix(df2)
 print(distance_matrix)
 
-unroll_matrix = unroll_distance_matrix(distance_matrix)
-print(unroll_matrix)
+unrolled_df = unroll_distance_matrix(distance_matrix)
+print(unrolled_df)
+
+reference_value = unrolled_df["id_start"].iloc[0]
+result_list = find_ids_within_ten_percentage_threshold(unrolled_df, reference_value)
+print(result_list)

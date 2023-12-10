@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.spatial.distance import cdist
+from datetime import time
 
 
 def calculate_distance_matrix(df) -> pd.DataFrame():  # type: ignore
@@ -115,8 +116,38 @@ def calculate_time_based_toll_rates(df) -> pd.DataFrame():  # type: ignore
         pandas.DataFrame
     """
     # Write your logic here
+    weekday_time_ranges = [
+        (time(0, 0), time(10, 0)),
+        (time(10, 0), time(18, 0)),
+        (time(18, 0), time(23, 59, 59)),
+    ]
+    weekday_discount_factors = [0.8, 1.2, 0.8]
+    weekend_discount_factor = 0.7
 
-    return df
+    result_df = unrolled_df[["id_start", "id_end", "distance"]].copy()
+    result_df["start_day"] = "Monday"
+    result_df["end_day"] = "Sunday"
+    result_df["start_time"] = time(0, 0)
+    result_df["end_time"] = time(23, 59, 59)
+
+    discount_factor = 0.0
+
+    for index, row in result_df.iterrows():
+        if row["start_day"] in ["Saturday", "Sunday"]:
+            discount_factor = weekend_discount_factor
+        else:
+            for i, (start_time, end_time) in enumerate(weekday_time_ranges):
+                if start_time <= row["start_time"] <= end_time:
+                    discount_factor = weekday_discount_factors[i]
+                    break
+
+        for vehicle_type in ["moto", "car", "rv", "bus", "truck"]:
+            if vehicle_type in unrolled_df.columns:
+                result_df.at[index, vehicle_type] = (
+                    unrolled_df.at[index, vehicle_type] * discount_factor
+                )
+
+    return result_df
 
 
 df2 = pd.read_csv("datasets/dataset-3.csv")
@@ -134,3 +165,6 @@ print(result_list)
 
 toll_rate = calculate_toll_rate(unrolled_df)
 print(toll_rate)
+
+time_based_toll = calculate_time_based_toll_rates(result_list)
+print(time_based_toll)

@@ -8,8 +8,6 @@ Under the function named `generate_car_matrix` write a logic that takes the `dat
 - dataframe should have values from `car` column
 - diagonal values should be 0.
 
-Sample result dataframe:\
- ![Task 1 Question 1](readme_images/task1-q1.png)
 
 
 ## Question 2: Car Type Count Calculation
@@ -35,8 +33,6 @@ Create a Python function named `multiply_matrix` that takes the resulting DataFr
 
 The function should return the modified DataFrame which has values rounded to 1 decimal place.
 
-Sample result dataframe:\
- ![Task 1 Question 5](readme_images/task1-q5.png)
 
 ## Question 6: Time Check
 
@@ -53,8 +49,7 @@ Create a function named `calculate_distance_matrix` that takes the `dataset-3.cs
 
 The resulting DataFrame should have cumulative distances along known routes, with diagonal values set to 0. If distances between toll locations A to B and B to C are known, then the distance from A to C should be the sum of these distances. Ensure the matrix is symmetric, accounting for bidirectional distances between toll locations (i.e. A to B is equal to B to A). 
 
-Sample result dataframe:\
- ![Task 2 Question 1](readme_images/task2-q1.png)
+
 
 ## Question 2: Unroll Distance Matrix
 
@@ -79,8 +74,7 @@ The resulting DataFrame should add 5 columns to the input DataFrame: `moto`, `ca
 - 2.2 for `bus`
 - 3.6 for `truck`
 
-Sample result dataframe:\
- ![Task 2 Question 4](readme_images/task2-q4.png)
+
 
 ## Question 5: Calculate Time-Based Toll Rates
 
@@ -102,5 +96,4 @@ Modify the values of vehicle columns according to the following time ranges:
 
 For each unique (`id_start`, `id_end`) pair, cover a full 24-hour period (from 12:00:00 AM to 11:59:59 PM) and span all 7 days of the week (from Monday to Sunday).
 
-Sample result dataframe:\
- ![Task 2 Question 5](readme_images/task2-q5.png)
+
